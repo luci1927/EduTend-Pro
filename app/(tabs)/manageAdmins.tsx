@@ -1,36 +1,46 @@
-import React, { useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Alert,
-    FlatList,
-    TextInput,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import {View, Text, TextInput, TouchableOpacity, FlatList,Alert, StyleSheet} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Admin {
     id: string;
     name: string;
-    role: "Super Admin" | "Editor" | "Viewer";
+    role: string;
     email: string;
-    status: "Active" | "Inactive";
+    status: string;
 }
 
 export default function ManageAdmins() {
-
-    const [admins, setAdmins] = useState<Admin[]>([
-        { id: "1", name: "Nimesh Gunawardane", role: "Super Admin", email: "nimeg@gmail.com", status: "Active" },
-        { id: "2", name: "Rohan Peiris", role: "Editor", email: "rohan.p@gmail.com", status: "Active" },
-        { id: "3", name: "Duriya Fernando", role: "Viewer", email: "duriya.f@gmail.com", status: "Inactive" },
-        { id: "4", name: "Bhagya Nethmini", role: "Viewer", email: "bhagya.n@gmail.com", status: "Active" },
-    ]);
-
+    const [admins, setAdmins] = useState<Admin[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const router = useRouter();
+
+    const loadAdmins = async () => {
+        try {
+            const storedData = await AsyncStorage.getItem('@admins_list');
+            if (storedData !== null) {
+                setAdmins(JSON.parse(storedData));
+            } else {
+                const initialData = [
+                    { id: "1", name: "Nimesh Gunawardane", role: "Super Admin", email: "nimeg@gmail.com", status: "Active" },
+                    { id: "2", name: "Rohan Peiris", role: "Editor", email: "rohan.p@gmail.com", status: "Active" },
+                ];
+                setAdmins(initialData);
+                await AsyncStorage.setItem('@admins_list', JSON.stringify(initialData));
+            }
+        } catch (error) {
+            console.error("Failed to load admins:", error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            loadAdmins();
+        }, [])
+    );
 
     const handleDelete = (id: string, name: string) => {
         Alert.alert(
@@ -41,7 +51,15 @@ export default function ManageAdmins() {
                 {
                     text: "Remove",
                     style: "destructive",
-                    onPress: () => setAdmins(prev => prev.filter(admin => admin.id !== id))
+                    onPress: async () => {
+                        try {
+                            const updatedAdmins = admins.filter(admin => admin.id !== id);
+                            setAdmins(updatedAdmins);
+                            await AsyncStorage.setItem('@admins_list', JSON.stringify(updatedAdmins));
+                        } catch (error) {
+                            Alert.alert("Error", "Could not delete admin.");
+                        }
+                    }
                 }
             ]
         );
@@ -51,7 +69,9 @@ export default function ManageAdmins() {
         <View style={styles.card}>
             <View style={styles.cardHeader}>
                 <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarText}>{item.name.split(' ').map(n => n[0]).join('')}</Text>
+                    <Text style={styles.avatarText}>
+                        {item.name ? item.name.split(' ').map(n => n[0]).join('') : "A"}
+                    </Text>
                 </View>
                 <View style={styles.infoContainer}>
                     <Text style={styles.nameText}>{item.name}</Text>
@@ -118,6 +138,7 @@ export default function ManageAdmins() {
         </SafeAreaView>
     );
 }
+
 
 const styles = StyleSheet.create({
     safeArea: {

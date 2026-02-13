@@ -1,17 +1,9 @@
-import React, { useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    FlatList,
-    TextInput,
-    Linking,
-    Alert,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import {View, Text, StyleSheet, TouchableOpacity, FlatList,TextInput, Linking, Alert} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Student {
     id: string;
@@ -24,25 +16,49 @@ interface Student {
 
 export default function StudentManagement() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [students, setStudents] = useState<Student[]>([]);
     const router = useRouter();
 
-    const [students] = useState<Student[]>([
-        { id: "101", name: "Sahan Perera", grade: "Grade 10-A", studentNo: "202401", guardianContact: "0775550101", status: "Present" },
-        { id: "102", name: "Nihal Kesara", grade: "Grade 10-B", studentNo: "202405", guardianContact: "0745550102", status: "Absent" },
-        { id: "103", name: "Daham Pandula", grade: "Grade 9-C", studentNo: "202412", guardianContact: "0715550103", status: "On Leave" },
-    ]);
+    const loadStudents = async () => {
+        try {
+            const storedData = await AsyncStorage.getItem('@students_list');
+            if (storedData !== null) {
+                setStudents(JSON.parse(storedData));
+            } else {
+                const initialData: Student[] = [
+                    { id: "101", name: "Sahan Perera", grade: "Grade 10-A", studentNo: "202401", guardianContact: "0775550101", status: "Present" },
+                ];
+                setStudents(initialData);
+                await AsyncStorage.setItem('@students_list', JSON.stringify(initialData));
+            }
+        } catch (error) {
+            console.error("Error loading students", error);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            loadStudents();
+        }, [])
+    );
 
     const handleCall = (number: string) => {
         Linking.openURL(`tel:${number}`);
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "Present": return "#2E7D32";
-            case "Absent": return "#D32F2F";
-            case "On Leave": return "#F57C00";
-            default: return "#777";
-        }
+    const handleDelete = (id: string, name: string) => {
+        Alert.alert("Remove Student", `Are you sure you want to remove ${name}?`, [
+            { text: "Cancel", style: "cancel" },
+            {
+                text: "Delete",
+                style: "destructive",
+                onPress: async () => {
+                    const filtered = students.filter(s => s.id !== id);
+                    setStudents(filtered);
+                    await AsyncStorage.setItem('@students_list', JSON.stringify(filtered));
+                }
+            }
+        ]);
     };
 
     const renderStudentItem = ({ item }: { item: Student }) => (
@@ -55,9 +71,9 @@ export default function StudentManagement() {
                     <Text style={styles.nameText}>{item.name}</Text>
                     <Text style={styles.idText}>Student No: {item.studentNo}</Text>
                 </View>
-                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) + '15' }]}>
-                    <View style={[styles.statusDot, { backgroundColor: getStatusColor(item.status) }]} />
-                    <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>{item.status}</Text>
+                <View style={[styles.statusIndicator, { backgroundColor: '#2E7D3215' }]}>
+                    <View style={[styles.statusDot, { backgroundColor: '#2E7D32' }]} />
+                    <Text style={[styles.statusText, { color: '#2E7D32' }]}>{item.status}</Text>
                 </View>
             </View>
 
@@ -75,7 +91,10 @@ export default function StudentManagement() {
             <View style={styles.divider} />
 
             <View style={styles.actionRow}>
-                <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push("/studentProfile")}>
+                <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={() => router.push({ pathname: "/studentProfile", params: { id: item.id } })}
+                >
                     <Text style={styles.secondaryButtonText}>View Profile</Text>
                 </TouchableOpacity>
 
@@ -83,8 +102,8 @@ export default function StudentManagement() {
                     <TouchableOpacity style={styles.circleIcon} onPress={() => handleCall(item.guardianContact)}>
                         <Ionicons name="call" size={18} color="#2E7D32" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.circleIcon}>
-                        <Ionicons name="create-outline" size={18} color="#2E7D32" />
+                    <TouchableOpacity style={styles.circleIcon} onPress={() => handleDelete(item.id, item.name)}>
+                        <Ionicons name="trash-outline" size={18} color="#D32F2F" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -102,14 +121,17 @@ export default function StudentManagement() {
                 <Ionicons name="search-outline" size={20} color="#999" />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Search by name or student number..."
+                    placeholder="Search name or student no..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />
             </View>
 
             <FlatList
-                data={students.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.studentNo.includes(searchQuery))}
+                data={students.filter(s =>
+                    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    s.studentNo.includes(searchQuery)
+                )}
                 keyExtractor={(item) => item.id}
                 renderItem={renderStudentItem}
                 contentContainerStyle={{ paddingBottom: 100 }}
@@ -121,7 +143,6 @@ export default function StudentManagement() {
         </SafeAreaView>
     );
 }
-
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: "#F4F6F9" },
     header: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 15 },

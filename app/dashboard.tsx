@@ -1,41 +1,62 @@
-import React, { useEffect } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    Image,
-    Alert,
-} from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 export default function Dashboard() {
-
     type User = {
         username: string;
         role: string;
     };
 
-    const [user, setUser] = React.useState<User>();
+    const [user, setUser] = useState<User>();
+    const [stats, setStats] = useState({
+        total: 0,
+        present: 0,
+        late: 0,
+        absent: 0
+    });
+
     const router = useRouter();
 
+    // 1. Load User Data (Runs once on mount)
     useEffect(() => {
         async function loadUser() {
-            const user = await AsyncStorage.getItem('user');
-            if (user !== null) {
-                const userData = JSON.parse(user);
-                setUser(userData);
+            const userJson = await AsyncStorage.getItem('user');
+            if (userJson !== null) {
+                setUser(JSON.parse(userJson));
             } else {
-                Alert.alert("No user found", "Please log in first.");
                 router.replace("/");
             }
         }
         loadUser();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            const getRealCounts = async () => {
+                try {
+                    const storedData = await AsyncStorage.getItem('@students_list');
+                    if (storedData) {
+                        const students = JSON.parse(storedData);
+
+                        setStats({
+                            total: students.length,
+                            present: students.filter((s: any) => s.status === "Present").length,
+                            late: students.filter((s: any) => s.status === "Late").length,
+                            absent: students.filter((s: any) => s.status === "Absent").length,
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to load stats", e);
+                }
+            };
+
+            getRealCounts();
+        }, [])
+    );
 
     function handleLogout() {
         Alert.alert("Confirm Logout", "Are you sure you want to log out?", [
@@ -80,39 +101,39 @@ export default function Dashboard() {
                     resizeMode="cover"
                 />
 
-                <View style={{ height: 1, backgroundColor: "#DDD", marginVertical: 20, marginHorizontal: 20, }} />
-                
+                <View style={{ height: 1, backgroundColor: "#DDD", marginVertical: 20, marginHorizontal: 20 }} />
+
+                {/* Real Data Cards */}
                 <View style={styles.statsContainer}>
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>Total Students</Text>
-                        <Text style={styles.cardValue}>120</Text>
+                        <Text style={styles.cardValue}>{stats.total}</Text>
                     </View>
 
-                    <View style={styles.card}>
+                    <View style={[styles.card, { borderLeftWidth: 4, borderLeftColor: '#2E7D32' }]}>
                         <Text style={styles.cardTitle}>Present Today</Text>
-                        <Text style={styles.cardValue}>88</Text>
+                        <Text style={[styles.cardValue, { color: '#2E7D32' }]}>{stats.present}</Text>
                     </View>
                 </View>
 
                 <View style={styles.statsContainer}>
-                    <View style={styles.card}>
+                    <View style={[styles.card, { borderLeftWidth: 4, borderLeftColor: '#F57C00' }]}>
                         <Text style={styles.cardTitle}>Late</Text>
-                        <Text style={styles.cardValue}>7</Text>
+                        <Text style={[styles.cardValue, { color: '#F57C00' }]}>{stats.late}</Text>
                     </View>
 
-                    <View style={styles.card}>
+                    <View style={[styles.card, { borderLeftWidth: 4, borderLeftColor: '#D32F2F' }]}>
                         <Text style={styles.cardTitle}>Absent</Text>
-                        <Text style={styles.cardValue}>5</Text>
+                        <Text style={[styles.cardValue, { color: '#D32F2F' }]}>{stats.absent}</Text>
                     </View>
                 </View>
 
-
             </ScrollView>
-            <TouchableOpacity style={styles.miniButton} onPress={() => router.push("/(tabs)/manageStudent")}>
-                <Text style={styles.buttonText}>
-                    Manage
-                </Text>
+
+            <TouchableOpacity style={styles.miniButton} onPress={() => router.push("/manageStudent")}>
+                <Text style={styles.buttonText}>Manage</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.fabOut} onPress={handleLogout}>
                 <AntDesign name="logout" size={24} color="#FFF" />
             </TouchableOpacity>

@@ -1,35 +1,66 @@
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    Image,
-    Linking,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StudentProfile() {
     const router = useRouter();
+    const { id } = useLocalSearchParams();
+    const [student, setStudent] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    const student = {
-        name: "Sahan Perera",
-        id: "202401",
-        grade: "Grade 10-A",
-        dob: "May 15, 2009",
-        gender: "Male",
-        bloodGroup: "O+",
-        admissionDate: "Jan 10, 2026",
-        guardianName: "Sunil Perera",
-        contact: "077 567 8890",
-        address: "123 Guruge Mv, Dompe, Western",
-        status: "Active",
+    useEffect(() => {
+        loadStudentData();
+    }, [id]);
+
+    const loadStudentData = async () => {
+        try {
+            const storedData = await AsyncStorage.getItem('@students_list');
+            if (storedData) {
+                const students = JSON.parse(storedData);
+                const foundStudent = students.find((s: any) => s.id === id);
+                setStudent(foundStudent);
+            }
+        } catch (error) {
+            console.error("Error loading student profile:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleCall = () => Linking.openURL(`tel:${student.contact}`);
+    const handleCall = () => {
+        if (student?.guardianContact) {
+            Linking.openURL(`tel:${student.guardianContact}`);
+        }
+    };
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#2E7D32" />
+            </View>
+        );
+    }
+
+    if (!student) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Student record not found.</Text>
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Text style={{ color: 'blue', marginTop: 10 }}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -47,10 +78,12 @@ export default function StudentProfile() {
 
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
-                        <Text style={styles.avatarText}>{student.name.split(' ').map(n => n[0]).join('')}</Text>
+                        <Text style={styles.avatarText}>
+                            {student.name.split(' ').map((n: string) => n[0]).join('')}
+                        </Text>
                     </View>
                     <Text style={styles.studentName}>{student.name}</Text>
-                    <Text style={styles.studentID}>{student.id} | {student.grade}</Text>
+                    <Text style={styles.studentID}>{student.studentNo} | {student.grade}</Text>
 
                     <View style={styles.badge}>
                         <Text style={styles.badgeText}>{student.status}</Text>
@@ -83,10 +116,14 @@ export default function StudentProfile() {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Personal Information</Text>
                     <View style={styles.infoCard}>
-                        <InfoRow label="Date of Birth" value={student.dob} icon="calendar-outline" />
+                        <InfoRow label="Date of Birth" value={formatDate(student.birthday)} icon="calendar-outline" />
                         <InfoRow label="Gender" value={student.gender} icon="person-outline" />
-                        <InfoRow label="Blood Group" value={student.bloodGroup} icon="water-outline" />
-                        <InfoRow label="Admission Date" value={student.admissionDate} icon="business-outline" />
+                        <InfoRow
+                            label="Admission Date"
+                            value={formatDate(student.admissionDate || new Date(parseInt(student.id)).toISOString())}
+                            icon="business-outline"
+                            isLast
+                        />
                     </View>
                 </View>
 
@@ -94,7 +131,7 @@ export default function StudentProfile() {
                     <Text style={styles.sectionTitle}>Guardian & Contact</Text>
                     <View style={styles.infoCard}>
                         <InfoRow label="Guardian" value={student.guardianName} icon="people-outline" />
-                        <InfoRow label="Phone" value={student.contact} icon="call-outline" />
+                        <InfoRow label="Phone" value={student.guardianContact} icon="call-outline" />
                         <InfoRow label="Address" value={student.address} icon="location-outline" isLast />
                     </View>
                 </View>
@@ -103,6 +140,7 @@ export default function StudentProfile() {
         </SafeAreaView>
     );
 }
+
 const InfoRow = ({ label, value, icon, isLast }: any) => (
     <View style={[styles.infoRow, isLast && { borderBottomWidth: 0 }]}>
         <View style={styles.infoIconBox}>
@@ -110,10 +148,12 @@ const InfoRow = ({ label, value, icon, isLast }: any) => (
         </View>
         <View style={{ flex: 1 }}>
             <Text style={styles.infoLabel}>{label}</Text>
-            <Text style={styles.infoValue}>{value}</Text>
+            <Text style={styles.infoValue}>{value || "Not Provided"}</Text>
         </View>
     </View>
 );
+
+
 
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: "#F4F6F9" },

@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    TouchableOpacity,
-    ScrollView,
-    Alert,
-    KeyboardAvoidingView,
-} from "react-native";
+import {View, Text, TextInput, TouchableOpacity, ScrollView,KeyboardAvoidingView, Alert, StyleSheet} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AddAdmin() {
     const router = useRouter();
@@ -22,34 +14,43 @@ export default function AddAdmin() {
     const [role, setRole] = useState<"Super Admin" | "Editor" | "Viewer">("Viewer");
     const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
-    const handleAddAdmin = () => {
+    const handleAddAdmin = async () => {
         if (!firstName.trim() || !lastName.trim() || !email.trim()) {
             Alert.alert("Validation Error", "Please complete all required fields.");
             return;
         }
 
-        const newAdmin = {
-            firstName,
-            lastName,
-            email,
-            role,
-            status,
-        };
+        try {
+            const newAdmin = {
+                id: Date.now().toString(),
+                name: `${firstName} ${lastName}`,
+                email: email.trim(),
+                role,
+                status,
+            };
 
-        console.log("Submitting Admin Data:", newAdmin);
+            const storedAdmins = await AsyncStorage.getItem('@admins_list');
+            const adminsArray = storedAdmins ? JSON.parse(storedAdmins) : [];
 
-        Alert.alert(
-            "Admin Added",
-            `Successfully added ${firstName} ${lastName}!`
-        );
+            const updatedAdmins = [...adminsArray, newAdmin];
+            await AsyncStorage.setItem('@admins_list', JSON.stringify(updatedAdmins));
 
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setRole("Viewer");
-        setStatus("Active");
+            Alert.alert(
+                "Admin Added",
+                `Successfully added ${firstName} ${lastName}!`,
+                [{ text: "OK", onPress: () => router.back() }]
+            );
 
-        router.back();
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setRole("Viewer");
+            setStatus("Active");
+
+        } catch (error) {
+            Alert.alert("Error", "Could not save admin data.");
+            console.error(error);
+        }
     };
 
     return (
@@ -91,6 +92,7 @@ export default function AddAdmin() {
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
+                            autoCapitalize="none"
                         />
                     </View>
 
@@ -152,6 +154,7 @@ export default function AddAdmin() {
         </SafeAreaView>
     );
 }
+
 
 const styles = StyleSheet.create({
     safeArea: {

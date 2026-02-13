@@ -1,79 +1,76 @@
 import React, { useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    TouchableOpacity,
-    Alert,
-    ScrollView,
-    KeyboardAvoidingView,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AddStudent() {
     const router = useRouter();
 
-    // --- Core Student Data ---
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [grade, setGrade] = useState("");
     const [birthday, setBirthday] = useState<Date | null>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [gender, setGender] = useState<"Male" | "Female">("Male");
 
-    // --- New Detailed Data (Guardians & Contact) ---
     const [guardianName, setGuardianName] = useState("");
     const [contactNumber, setContactNumber] = useState("");
     const [address, setAddress] = useState("");
-    const [previousSchool, setPreviousSchool] = useState(""); // Optional: for transfer students
+    const [previousSchool, setPreviousSchool] = useState("");
 
-    const handleAddStudent = () => {
-        // Validation: Ensure all critical fields are filled
+    const handleAddStudent = async () => {
         if (
             !firstName.trim() ||
             !lastName.trim() ||
+            !grade.trim() ||
             !birthday ||
             !guardianName.trim() ||
             !contactNumber.trim() ||
             !address.trim()
         ) {
-            Alert.alert("Validation Error", "Please complete all required fields.");
+            Alert.alert("Validation Error", "Please complete all required fields including the Class/Grade.");
             return;
         }
 
-        // Here you would send this complete object to your backend
-        const newStudentData = {
-            firstName,
-            lastName,
-            birthday,
-            gender,
-            guardianName,
-            contactNumber,
-            address,
-            previousSchool,
-        };
+        try {
 
-        console.log("Submitting Student Data:", newStudentData);
+            const currentYear = new Date().getFullYear();
+            const randomId = Math.floor(1000 + Math.random() * 9000);
 
-        Alert.alert(
-            "Student Admitted",
-            `Successfully enrolled ${firstName} ${lastName}!`
-        );
+            const newStudent = {
+                id: Date.now().toString(),
+                name: `${firstName} ${lastName}`,
+                studentNo: `${currentYear}${randomId}`,
+                grade: grade.trim(),
+                status: "Present",
+                guardianContact: contactNumber,
+                guardianName,
+                address,
+                birthday: birthday.toISOString(),
+                gender,
+                previousSchool,
+                admissionDate: new Date().toISOString(),
+            };
 
-        // Reset form
-        setFirstName("");
-        setLastName("");
-        setBirthday(null);
-        setGender("Male");
-        setGuardianName("");
-        setContactNumber("");
-        setAddress("");
-        setPreviousSchool("");
+            const existingData = await AsyncStorage.getItem('@students_list');
+            const students = existingData ? JSON.parse(existingData) : [];
+            const updatedStudents = [...students, newStudent];
 
-        router.back();
+            await AsyncStorage.setItem('@students_list', JSON.stringify(updatedStudents));
+
+            Alert.alert(
+                "Student Admitted",
+                `Successfully enrolled ${firstName} ${lastName} in ${grade}!`,
+                [{ text: "OK", onPress: () => router.back() }]
+            );
+
+        } catch (error) {
+            Alert.alert("Error", "Failed to save student record.");
+        }
     };
 
     return (
@@ -83,9 +80,7 @@ export default function AddStudent() {
                     <Ionicons name="arrow-back" size={24} color="#111" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Add New Student</Text>
-                <TouchableOpacity style={styles.editButton}>
-                    <Ionicons name="pencil-outline" size={22} color="#2E7D32" />
-                </TouchableOpacity>
+                <View style={{ width: 24 }} />
             </View>
             <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
                 <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
@@ -112,6 +107,17 @@ export default function AddStudent() {
                         />
                     </View>
 
+
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Class / Grade <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Grade 10-A"
+                            value={grade}
+                            onChangeText={setGrade}
+                        />
+                    </View>
+
                     <View style={styles.card}>
                         <Text style={styles.label}>Date of Birth <Text style={styles.required}>*</Text></Text>
                         <TouchableOpacity
@@ -119,9 +125,7 @@ export default function AddStudent() {
                             onPress={() => setShowDatePicker(true)}
                         >
                             <Text style={{ color: birthday ? "#111" : "#999" }}>
-                                {birthday
-                                    ? birthday.toDateString()
-                                    : "Select Date of Birth"}
+                                {birthday ? birthday.toDateString() : "Select Date of Birth"}
                             </Text>
                         </TouchableOpacity>
                         {showDatePicker && (
@@ -195,16 +199,6 @@ export default function AddStudent() {
                             onChangeText={setAddress}
                             multiline={true}
                             numberOfLines={3}
-                        />
-                    </View>
-
-                    <View style={styles.card}>
-                        <Text style={styles.label}>School (If applicable)</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="e.g. Bandaranayake College, Gampaha"
-                            value={previousSchool}
-                            onChangeText={setPreviousSchool}
                         />
                     </View>
 
