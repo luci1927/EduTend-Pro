@@ -1,7 +1,7 @@
-import React from "react";
-import { Tabs } from "expo-router";
-import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
 export default function TabLayout() {
     return (
@@ -55,7 +55,6 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-    /* HEADER */
     header: {
         backgroundColor: "#2E7D32",
         elevation: 4,
@@ -70,7 +69,6 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
 
-    /* FIXED TAB BAR */
     tabBar: {
         backgroundColor: "#FFF",
         height: 85,

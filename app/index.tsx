@@ -23,7 +23,6 @@ export default function LoginPage() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const router = useRouter();
 
-  // Listen to keyboard events
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
     const hideSub = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
@@ -53,7 +52,6 @@ export default function LoginPage() {
         >
           <Text style={styles.appTitle}>EduTend Pro</Text>
 
-          {/* Hide logo when keyboard is visible */}
           {!keyboardVisible && (
             <Image source={login} style={styles.logo} resizeMode="contain" />
           )}

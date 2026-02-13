@@ -13,7 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-// Mock Data Type
 interface Student {
     id: string;
     name: string;
@@ -27,14 +26,12 @@ export default function StudentManagement() {
     const [searchQuery, setSearchQuery] = useState("");
     const router = useRouter();
 
-    // 1. Mock Data
     const [students] = useState<Student[]>([
         { id: "101", name: "Sahan Perera", grade: "Grade 10-A", studentNo: "202401", guardianContact: "0775550101", status: "Present" },
         { id: "102", name: "Nihal Kesara", grade: "Grade 10-B", studentNo: "202405", guardianContact: "0745550102", status: "Absent" },
         { id: "103", name: "Daham Pandula", grade: "Grade 9-C", studentNo: "202412", guardianContact: "0715550103", status: "On Leave" },
     ]);
 
-    // 2. Action Helpers
     const handleCall = (number: string) => {
         Linking.openURL(`tel:${number}`);
     };
@@ -48,7 +45,6 @@ export default function StudentManagement() {
         }
     };
 
-    // 3. Render Student Card
     const renderStudentItem = ({ item }: { item: Student }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -179,23 +175,54 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 6,
     },
-    statusDot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
-    statusText: { fontSize: 11, fontWeight: "700" },
+    statusDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        marginRight: 6
+    },
+    statusText: {
+        fontSize: 11,
+        fontWeight: "700"
+    },
 
-    detailsRow: { flexDirection: "row", marginTop: 15 },
-    detailItem: { flexDirection: "row", alignItems: "center", marginRight: 20 },
-    detailText: { fontSize: 13, color: "#666", marginLeft: 6 },
+    detailsRow: {
+        flexDirection: "row",
+        marginTop: 15
+    },
+    detailItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginRight: 20
+    },
+    detailText: {
+        fontSize: 13,
+        color: "#666",
+        marginLeft: 6
+    },
 
-    divider: { height: 1, backgroundColor: "#F0F0F0", marginVertical: 15 },
+    divider: {
+        height: 1,
+        backgroundColor: "#F0F0F0",
+        marginVertical: 15
+    },
 
-    actionRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    actionRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     secondaryButton: {
         paddingVertical: 8,
         paddingHorizontal: 15,
         borderRadius: 8,
         backgroundColor: "#F5F5F5",
     },
-    secondaryButtonText: { fontSize: 13, fontWeight: "600", color: "#555" },
+    secondaryButtonText: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#555"
+    },
 
     iconActions: { flexDirection: "row" },
     circleIcon: {

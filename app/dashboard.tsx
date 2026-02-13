@@ -56,8 +56,6 @@ export default function Dashboard() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false}>
-
-                {/* Header */}
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.greeting}>EduTend Pro</Text>
@@ -72,13 +70,10 @@ export default function Dashboard() {
                     <TouchableOpacity style={styles.avatar} onPress={() => router.push("/settings")}>
                         <AntDesign name="user" size={24} color="#FFF" />
                     </TouchableOpacity>
-
                 </View>
 
-                {/* Today's Date */}
                 <Text style={styles.date}>{today}</Text>
 
-                {/* Stats Section */}
                 <View style={styles.statsContainer}>
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>Total Students</Text>

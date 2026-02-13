@@ -15,7 +15,6 @@ import { useRouter } from "expo-router";
 export default function StudentProfile() {
     const router = useRouter();
 
-    // Mock data representing a student
     const student = {
         name: "Sahan Perera",
         id: "202401",
@@ -34,7 +33,6 @@ export default function StudentProfile() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            {/* --- Custom Header --- */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#111" />
@@ -47,7 +45,6 @@ export default function StudentProfile() {
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
 
-                {/* --- Top Profile Section --- */}
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
                         <Text style={styles.avatarText}>{student.name.split(' ').map(n => n[0]).join('')}</Text>
@@ -60,7 +57,6 @@ export default function StudentProfile() {
                     </View>
                 </View>
 
-                {/* --- Quick Actions --- */}
                 <View style={styles.actionRow}>
                     <TouchableOpacity style={styles.actionItem} onPress={handleCall}>
                         <View style={[styles.actionIcon, { backgroundColor: '#E8F5E9' }]}>
@@ -84,7 +80,6 @@ export default function StudentProfile() {
                     </TouchableOpacity>
                 </View>
 
-                {/* --- Information Sections --- */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Personal Information</Text>
                     <View style={styles.infoCard}>
@@ -108,8 +103,6 @@ export default function StudentProfile() {
         </SafeAreaView>
     );
 }
-
-// Sub-component for clean rows
 const InfoRow = ({ label, value, icon, isLast }: any) => (
     <View style={[styles.infoRow, isLast && { borderBottomWidth: 0 }]}>
         <View style={styles.infoIconBox}>

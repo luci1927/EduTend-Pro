@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Settings() {
-    // Account State
+
     const [name, setName] = useState("Admin User");
     const [email, setEmail] = useState("admin@school.com");
     const [phone, setPhone] = useState("0771234567");
@@ -21,7 +21,6 @@ export default function Settings() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
 
-    // System State
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [autoLogout, setAutoLogout] = useState("10"); // minutes
     const [sessionTimeout, setSessionTimeout] = useState("30"); // minutes
@@ -44,7 +43,6 @@ export default function Settings() {
         <SafeAreaView style={styles.safeArea}>
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
 
-                {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Your Profile</Text>
                     <Text style={styles.headerSubtitle}>
@@ -52,7 +50,6 @@ export default function Settings() {
                     </Text>
                 </View>
 
-                {/* ================= ACCOUNT SETTINGS ================= */}
                 <View style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>Account Settings</Text>
 
@@ -92,7 +89,6 @@ export default function Settings() {
                     </TouchableOpacity>
                 </View>
 
-                {/* ================= PASSWORD ================= */}
                 <View style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>Change Password</Text>
 
@@ -123,7 +119,6 @@ export default function Settings() {
                     </TouchableOpacity>
                 </View>
 
-                {/* ================= SYSTEM SETTINGS ================= */}
                 <View style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>System Settings</Text>
 
@@ -155,7 +150,6 @@ export default function Settings() {
                         />
                     </View>
 
-                    {/* Session Timeout */}
                     <View style={styles.inputGroup}>
                         <Ionicons name="hourglass-outline" size={18} color="#777" />
                         <TextInput

@@ -23,7 +23,6 @@ export default function AddAdmin() {
     const [status, setStatus] = useState<"Active" | "Inactive">("Active");
 
     const handleAddAdmin = () => {
-        // Validation
         if (!firstName.trim() || !lastName.trim() || !email.trim()) {
             Alert.alert("Validation Error", "Please complete all required fields.");
             return;
@@ -44,7 +43,6 @@ export default function AddAdmin() {
             `Successfully added ${firstName} ${lastName}!`
         );
 
-        // Reset Form
         setFirstName("");
         setLastName("");
         setEmail("");
@@ -63,99 +61,93 @@ export default function AddAdmin() {
                 <Text style={styles.headerTitle}>Add New Admin</Text>
                 <View style={{ width: 24 }} />
             </View>
-<KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-                {/* First Name */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>First Name <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Saman"
-                        value={firstName}
-                        onChangeText={setFirstName}
-                    />
-                </View>
-
-                {/* Last Name */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Last Name <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Perera"
-                        value={lastName}
-                        onChangeText={setLastName}
-                    />
-                </View>
-
-                {/* Email */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Email <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. saman.perera@gmail.com"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                    />
-                </View>
-
-                {/* Role */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Role <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.statusContainer}>
-                        {["Super Admin", "Editor", "Viewer"].map(r => (
-                            <TouchableOpacity
-                                key={r}
-                                style={[
-                                    styles.statusButton,
-                                    role === r && styles.statusButtonActive,
-                                ]}
-                                onPress={() => setRole(r as any)}
-                            >
-                                <Text
-                                    style={[
-                                        styles.statusText,
-                                        role === r && styles.statusTextActive,
-                                    ]}
-                                >
-                                    {r}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+            <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+                <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>First Name <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Saman"
+                            value={firstName}
+                            onChangeText={setFirstName}
+                        />
                     </View>
-                </View>
 
-                {/* Active Status */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Active Status <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.statusContainer}>
-                        {["Active", "Inactive"].map(s => (
-                            <TouchableOpacity
-                                key={s}
-                                style={[
-                                    styles.statusButton,
-                                    status === s && styles.statusButtonActive,
-                                ]}
-                                onPress={() => setStatus(s as any)}
-                            >
-                                <Text
-                                    style={[
-                                        styles.statusText,
-                                        status === s && styles.statusTextActive,
-                                    ]}
-                                >
-                                    {s}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Last Name <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Perera"
+                            value={lastName}
+                            onChangeText={setLastName}
+                        />
                     </View>
-                </View>
 
-                {/* Submit Button */}
-                <TouchableOpacity style={styles.addButton} onPress={handleAddAdmin}>
-                    <Text style={styles.addButtonText}>Add Admin</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Email <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. saman.perera@gmail.com"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                        />
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Role <Text style={styles.required}>*</Text></Text>
+                        <View style={styles.statusContainer}>
+                            {["Super Admin", "Editor", "Viewer"].map(r => (
+                                <TouchableOpacity
+                                    key={r}
+                                    style={[
+                                        styles.statusButton,
+                                        role === r && styles.statusButtonActive,
+                                    ]}
+                                    onPress={() => setRole(r as any)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.statusText,
+                                            role === r && styles.statusTextActive,
+                                        ]}
+                                    >
+                                        {r}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Active Status <Text style={styles.required}>*</Text></Text>
+                        <View style={styles.statusContainer}>
+                            {["Active", "Inactive"].map(s => (
+                                <TouchableOpacity
+                                    key={s}
+                                    style={[
+                                        styles.statusButton,
+                                        status === s && styles.statusButtonActive,
+                                    ]}
+                                    onPress={() => setStatus(s as any)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.statusText,
+                                            status === s && styles.statusTextActive,
+                                        ]}
+                                    >
+                                        {s}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
+                    <TouchableOpacity style={styles.addButton} onPress={handleAddAdmin}>
+                        <Text style={styles.addButtonText}>Add Admin</Text>
+                    </TouchableOpacity>
+                </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

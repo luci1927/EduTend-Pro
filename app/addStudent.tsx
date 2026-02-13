@@ -88,144 +88,131 @@ export default function AddStudent() {
                 </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-                
-                    
+                <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
 
-                {/* --- Section 1: Student Details --- */}
-                <Text style={styles.sectionHeader}>Student Details</Text>
+                    <Text style={styles.sectionHeader}>Student Details</Text>
 
-                {/* First Name */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>First Name <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Shehan"
-                        value={firstName}
-                        onChangeText={setFirstName}
-                    />
-                </View>
-
-                {/* Last Name */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Last Name <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Samarakoon"
-                        value={lastName}
-                        onChangeText={setLastName}
-                    />
-                </View>
-
-                {/* Birthday */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Date of Birth <Text style={styles.required}>*</Text></Text>
-                    <TouchableOpacity
-                        style={styles.dateInput}
-                        onPress={() => setShowDatePicker(true)}
-                    >
-                        <Text style={{ color: birthday ? "#111" : "#999" }}>
-                            {birthday
-                                ? birthday.toDateString()
-                                : "Select Date of Birth"}
-                        </Text>
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={birthday || new Date()}
-                            mode="date"
-                            display="default"
-                            maximumDate={new Date()}
-                            onChange={(event, selectedDate) => {
-                                setShowDatePicker(false);
-                                if (selectedDate) setBirthday(selectedDate);
-                            }}
+                    <View style={styles.card}>
+                        <Text style={styles.label}>First Name <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Shehan"
+                            value={firstName}
+                            onChangeText={setFirstName}
                         />
-                    )}
-                </View>
-
-                {/* Gender */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Gender <Text style={styles.required}>*</Text></Text>
-                    <View style={styles.statusContainer}>
-                        {["Male", "Female"].map((g) => (
-                            <TouchableOpacity
-                                key={g}
-                                style={[
-                                    styles.statusButton,
-                                    gender === g && styles.statusButtonActive,
-                                ]}
-                                onPress={() => setGender(g as any)}
-                            >
-                                <Text
-                                    style={[
-                                        styles.statusText,
-                                        gender === g && styles.statusTextActive,
-                                    ]}
-                                >
-                                    {g}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
                     </View>
-                </View>
 
-                {/* --- Section 2: Guardian & Contact Info --- */}
-                <Text style={styles.sectionHeader}>Guardian & Contact</Text>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Last Name <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Samarakoon"
+                            value={lastName}
+                            onChangeText={setLastName}
+                        />
+                    </View>
 
-                {/* Guardian Name */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Guardian Name <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Damith Samarakoon"
-                        value={guardianName}
-                        onChangeText={setGuardianName}
-                    />
-                </View>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Date of Birth <Text style={styles.required}>*</Text></Text>
+                        <TouchableOpacity
+                            style={styles.dateInput}
+                            onPress={() => setShowDatePicker(true)}
+                        >
+                            <Text style={{ color: birthday ? "#111" : "#999" }}>
+                                {birthday
+                                    ? birthday.toDateString()
+                                    : "Select Date of Birth"}
+                            </Text>
+                        </TouchableOpacity>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={birthday || new Date()}
+                                mode="date"
+                                display="default"
+                                maximumDate={new Date()}
+                                onChange={(event, selectedDate) => {
+                                    setShowDatePicker(false);
+                                    if (selectedDate) setBirthday(selectedDate);
+                                }}
+                            />
+                        )}
+                    </View>
 
-                {/* Phone Number */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Contact Number <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. +94 77 123 4567"
-                        value={contactNumber}
-                        onChangeText={setContactNumber}
-                        keyboardType="phone-pad"
-                    />
-                </View>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Gender <Text style={styles.required}>*</Text></Text>
+                        <View style={styles.statusContainer}>
+                            {["Male", "Female"].map((g) => (
+                                <TouchableOpacity
+                                    key={g}
+                                    style={[
+                                        styles.statusButton,
+                                        gender === g && styles.statusButtonActive,
+                                    ]}
+                                    onPress={() => setGender(g as any)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.statusText,
+                                            gender === g && styles.statusTextActive,
+                                        ]}
+                                    >
+                                        {g}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
 
-                {/* Address */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>Home Address <Text style={styles.required}>*</Text></Text>
-                    <TextInput
-                        style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
-                        placeholder="Enter full residential address"
-                        value={address}
-                        onChangeText={setAddress}
-                        multiline={true}
-                        numberOfLines={3}
-                    />
-                </View>
+                    <Text style={styles.sectionHeader}>Guardian & Contact</Text>
 
-                {/* Previous School (Optional) */}
-                <View style={styles.card}>
-                    <Text style={styles.label}>School (If applicable)</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="e.g. Bandaranayake College, Gampaha"
-                        value={previousSchool}
-                        onChangeText={setPreviousSchool}
-                    />
-                </View>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Guardian Name <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Damith Samarakoon"
+                            value={guardianName}
+                            onChangeText={setGuardianName}
+                        />
+                    </View>
 
-                {/* Submit Button */}
-                <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
-                    <Text style={styles.addButtonText}>Complete Admission</Text>
-                </TouchableOpacity>
-                
-            </ScrollView>
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Contact Number <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. +94 77 123 4567"
+                            value={contactNumber}
+                            onChangeText={setContactNumber}
+                            keyboardType="phone-pad"
+                        />
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={styles.label}>Home Address <Text style={styles.required}>*</Text></Text>
+                        <TextInput
+                            style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+                            placeholder="Enter full residential address"
+                            value={address}
+                            onChangeText={setAddress}
+                            multiline={true}
+                            numberOfLines={3}
+                        />
+                    </View>
+
+                    <View style={styles.card}>
+                        <Text style={styles.label}>School (If applicable)</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. Bandaranayake College, Gampaha"
+                            value={previousSchool}
+                            onChangeText={setPreviousSchool}
+                        />
+                    </View>
+
+                    <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
+                        <Text style={styles.addButtonText}>Complete Admission</Text>
+                    </TouchableOpacity>
+
+                </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -247,7 +234,7 @@ const styles = StyleSheet.create({
     headerTitle: { fontSize: 18, fontWeight: '700', color: '#111' },
     backButton: { padding: 4 },
     editButton: { padding: 4 },
-    
+
     sectionHeader: {
         fontSize: 18,
         fontWeight: "600",

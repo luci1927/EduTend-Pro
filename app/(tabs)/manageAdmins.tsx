@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-// Mock Data Type
 interface Admin {
     id: string;
     name: string;
@@ -22,7 +21,7 @@ interface Admin {
 }
 
 export default function ManageAdmins() {
-    // 1. Mock Data State
+
     const [admins, setAdmins] = useState<Admin[]>([
         { id: "1", name: "Nimesh Gunawardane", role: "Super Admin", email: "nimeg@gmail.com", status: "Active" },
         { id: "2", name: "Rohan Peiris", role: "Editor", email: "rohan.p@gmail.com", status: "Active" },
@@ -33,7 +32,6 @@ export default function ManageAdmins() {
     const [searchQuery, setSearchQuery] = useState("");
     const router = useRouter();
 
-    // 2. Handle Delete Action
     const handleDelete = (id: string, name: string) => {
         Alert.alert(
             "Remove Admin",
@@ -49,7 +47,6 @@ export default function ManageAdmins() {
         );
     };
 
-    // 3. Render Individual Admin Card
     const renderAdminItem = ({ item }: { item: Admin }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -94,7 +91,6 @@ export default function ManageAdmins() {
                 <Text style={styles.headerSubtitle}>Total Admins: {admins.length}</Text>
             </View>
 
-            {/* Search Bar (Reusing Input Style) */}
             <View style={styles.searchBar}>
                 <Ionicons name="search-outline" size={20} color="#999" />
                 <TextInput
@@ -105,7 +101,6 @@ export default function ManageAdmins() {
                 />
             </View>
 
-            {/* List */}
             <FlatList
                 data={admins.filter(a => a.name.toLowerCase().includes(searchQuery.toLowerCase()))}
                 keyExtractor={(item) => item.id}
@@ -139,8 +134,12 @@ const styles = StyleSheet.create({
         fontWeight: "800",
         color: "#1A1A1A",
     },
-    headerSubtitle: { fontSize: 14, color: "#666", marginTop: 4 },
-    // --- Search Style ---
+    headerSubtitle: { 
+        fontSize: 14, 
+        color: "#666", 
+        marginTop: 4 
+    },
+
     searchBar: {
         flexDirection: "row",
         alignItems: "center",
@@ -153,8 +152,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E0E0E0",
     },
-    searchInput: { flex: 1, marginLeft: 10, fontSize: 16 },
-    // --- Card Style (Reused & Adapted) ---
+    searchInput: {
+        flex: 1, 
+        marginLeft: 10, 
+        fontSize: 16 
+    },
+
     card: {
         backgroundColor: "#fff",
         borderRadius: 16,
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
         color: "#777",
         marginTop: 2,
     },
-    // --- Badges ---
     badge: {
         paddingHorizontal: 10,
         paddingVertical: 4,
@@ -220,7 +222,6 @@ const styles = StyleSheet.create({
     textInactive: {
         color: "#D32F2F",
     },
-    // --- Actions ---
     divider: {
         height: 1,
         backgroundColor: "#F0F0F0",
@@ -259,7 +260,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#EEE",
     },
-    // --- Footer Button ---
     footer: {
         position: 'absolute',
         bottom: 20,
