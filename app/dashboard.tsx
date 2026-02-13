@@ -74,6 +74,14 @@ export default function Dashboard() {
 
                 <Text style={styles.date}>{today}</Text>
 
+                <Image
+                    source={require("../assets/images/man-works.png")}
+                    style={{ width: "100%", height: 200, marginBottom: 10, marginTop: 20 }}
+                    resizeMode="cover"
+                />
+
+                <View style={{ height: 1, backgroundColor: "#DDD", marginVertical: 20, marginHorizontal: 20, }} />
+                
                 <View style={styles.statsContainer}>
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>Total Students</Text>
